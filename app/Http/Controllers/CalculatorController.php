@@ -47,7 +47,13 @@ class CalculatorController extends Controller
 
         $countSqrt = 0;
         $expression = preg_replace_callback("/sqrt\(([0-9+-\/*]+)\)/", function($matches) {
-            return sqrt(floatval($this->computeBasicOperationFromString($matches[1])));
+            $number = floatval($this->computeBasicOperationFromString($matches[1]));
+
+            if ($number < 0) {
+                throw new \Exception("Invalid operation: sqrt of negative number");
+            }
+
+            return sqrt($number);
         }, $expression, -1, $countSqrt);
 
         if ($countSqrt != 0) {
