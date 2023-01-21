@@ -16,16 +16,16 @@ class CalculatorController extends Controller
             "expression" => "required|regex:/^[0-9+-\/* ()\bsqrt\b]+$/",
         ]);
 
-        $expression = str_replace(" ", "", $validated["expression"]);
+        $expression = " " . str_replace(" ", "", $validated["expression"]);
 
         try {
-            $result = $this->computeFromString($expression);
+            $result = trim($this->computeFromString($expression));
         } catch (\Exception $exception) {
             return response()->json(["error" => $exception->getMessage()]);
         }
 
 
-        return  response()->json(["result" => $result]);
+        return response()->json(["result" => $result]);
     }
 
     /**
@@ -37,7 +37,7 @@ class CalculatorController extends Controller
      */
     private function computeFromString(string $expression): string {
         $countParentheses = 0;
-        $expression = preg_replace_callback("/[^t]\(([0-9+-\/*]+)\)/", function($matches) {
+        $expression = preg_replace_callback("/[^t]\(([0-9+-\/*]+)\)/", function ($matches) {
             return substr($matches[0], 0, 1) . $this->computeBasicOperationFromString($matches[1]);
         }, $expression, -1, $countParentheses);
 
@@ -46,7 +46,7 @@ class CalculatorController extends Controller
         }
 
         $countSqrt = 0;
-        $expression = preg_replace_callback("/sqrt\(([0-9+-\/*]+)\)/", function($matches) {
+        $expression = preg_replace_callback("/sqrt\(([0-9+-\/*]+)\)/", function ($matches) {
             $number = floatval($this->computeBasicOperationFromString($matches[1]));
 
             if ($number < 0) {
