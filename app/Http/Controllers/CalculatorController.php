@@ -69,7 +69,7 @@ class CalculatorController extends Controller
         $countMulDiv = 0;
         $countAddSub = 0;
 
-        $expression = preg_replace_callback("/([0-9.]+)([*\/])([0-9.]+)/", function ($matches) {
+        $expression = preg_replace_callback("/(-*[0-9.]+)([*\/])(-*[0-9.]+)/", function ($matches) {
             $number1 = floatval($matches[1]);
             $number2 = floatval($matches[3]);
             if ($number1 != $matches[1] || $number2 != $matches[3]) {
@@ -83,11 +83,15 @@ class CalculatorController extends Controller
                 return $number1 / $number2;
             }
 
+            if ($number1 < 0 && $number2 < 0) {
+                return "+" . $number1 * $number2;
+            }
+
             return $number1 * $number2;
         }, $expression, 1, $countMulDiv);
 
         if ($countMulDiv == 0) {
-            $expression = preg_replace_callback("/([0-9.]+)([+-])([0-9.]+)/", function ($matches) {
+            $expression = preg_replace_callback("/(-*[0-9.]+)([+-])(-*[0-9.]+)/", function ($matches) {
                 $number1 = floatval($matches[1]);
                 $number2 = floatval($matches[3]);
                 if ($number1 != $matches[1] || $number2 != $matches[3]) {
